@@ -7,7 +7,7 @@
 
 static void onError(int error, const char* description) { fputs(description, stderr); }
 
-void initDisplay(int width, int height, float ratio) {
+void initDisplay(int width, int height) {
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glMatrixMode(GL_PROJECTION);
@@ -20,6 +20,14 @@ void initDisplay(int width, int height, float ratio) {
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+static void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	switch (key) {
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, GL_TRUE);
+			break;
+	}
 }
 
 inline void setColor(HSL& hsl) {
@@ -179,6 +187,9 @@ inline GLFWwindow* initWindow(bool isFullscreen, int monitorNum, int& width, int
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, onKey);
+
+	initDisplay(width, height);
 
 	return window;
 }
