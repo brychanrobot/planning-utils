@@ -4,6 +4,8 @@
 #include <vector>
 #include <GLFW/glfw3.h>
 #include "libs/color.hpp"
+#include "geom/Coord.hpp"
+#include "geom/Rect.hpp"
 
 static void onError(int error, const char* description) { fputs(description, stderr); }
 
@@ -48,14 +50,14 @@ inline void drawLine(Coord start, Coord end, int linewidth, HSL hsl) {
 	glEnd();
 }
 
-inline void drawTree(const std::shared_ptr<Node>& root) {
+inline void drawTree(const std::shared_ptr<RrtNode>& root) {
 	for (auto child : root->children) {
 		drawLine(root->coord, child->coord, 1, HSL(100, 1, 0.5));
 		drawTree(child);
 	}
 }
 
-inline void drawGraphRecursive(const std::shared_ptr<Node>& node, std::set<std::shared_ptr<Node>>& visited) {
+inline void drawGraphRecursive(const std::shared_ptr<RrtNode>& node, std::set<std::shared_ptr<RrtNode>>& visited) {
 	visited.insert(node);
 	for (auto child : node->children) {
 		HSL* hsl;
@@ -83,7 +85,7 @@ inline void drawGraphRecursive(const std::shared_ptr<Node>& node, std::set<std::
 }
 
 /*
-void drawGraphIterative(set<Node*>& visited, unordered_map<Node*, std::vector<Node*>> visibilityGraph) {
+void drawGraphIterative(set<RrtNode*>& visited, unordered_map<RrtNode*, std::vector<RrtNode*>> visibilityGraph) {
     for (auto kv_pair : visibilityGraph) {
         auto parent = kv_pair.first;
 
@@ -117,8 +119,8 @@ void drawGraphIterative(set<Node*>& visited, unordered_map<Node*, std::vector<No
     }
 }
 
-void drawGraph(Node* root, unordered_map<Node*, std::vector<Node*>> visibilityGraph) {
-    set<Node*> visited;
+void drawGraph(RrtNode* root, unordered_map<RrtNode*, std::vector<RrtNode*>> visibilityGraph) {
+    set<RrtNode*> visited;
     // drawGraphRecursive(root, visited);
     drawGraphIterative(visited, visibilityGraph);
 }
