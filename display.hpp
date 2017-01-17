@@ -2,6 +2,7 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <cmath>
 #include <GLFW/glfw3.h>
 #include "libs/color.hpp"
 #include "geom/Coord.hpp"
@@ -19,10 +20,13 @@ void initDisplay(int width, int height) {
 	glScalef(1, -1, 1);
 	glTranslatef(0, -height, 0);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
 	glDisable(GL_DEPTH_TEST);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	// glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	// glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 }
 
 static void onKey(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -33,21 +37,67 @@ static void onKey(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
-inline void setColor(HSL& hsl) {
+inline void setColor(HSL& hsl, double alpha = 1) {
 	auto rgb = HSLToRGB(hsl);
-	glColor3d(rgb.R, rgb.G, rgb.B);
+	glColor4d(rgb.R, rgb.G, rgb.B, alpha);
+}
+
+inline void drawHollowCircle(Coord point, double radius, HSL hsl, double lineThickness = 2) {
+	glEnable(GL_LINE_SMOOTH);
+
+	int numTriangles = 4 * radius;
+	double stepAngle = 2 * M_PI / numTriangles;
+	setColor(hsl);
+
+	glLineWidth(lineThickness);
+	glBegin(GL_LINE_LOOP);
+
+	for (int v = 0; v < numTriangles; v++) {
+		auto angle = v * stepAngle;
+		auto x = cos(angle) * radius + point.x;
+		auto y = sin(angle) * radius + point.y;
+		glVertex2d(x, y);
+	}
+
+	glEnd();
+
+	glDisable(GL_LINE_SMOOTH);
+}
+
+inline void drawSolidCircle(Coord point, double radius, HSL hsl, double alpha = 1) {
+	glEnable(GL_POLYGON_SMOOTH);
+
+	int numTriangles = 4 * radius;
+	double stepAngle = 2 * M_PI / numTriangles;
+	setColor(hsl, alpha);
+
+	glBegin(GL_TRIANGLE_FAN);
+
+	glVertex2d(point.x, point.y);
+	for (int v = 0; v < numTriangles + 1; v++) {
+		auto angle = v * stepAngle;
+		auto x = cos(angle) * radius + point.x;
+		auto y = sin(angle) * radius + point.y;
+		glVertex2d(x, y);
+	}
+
+	glEnd();
+
+	glDisable(GL_POLYGON_SMOOTH);
 }
 
 inline void drawPoint(Coord point, double radius, HSL hsl) {
-	glEnable(GL_POINT_SMOOTH);
+	/*glEnable(GL_POINT_SMOOTH);
 	glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
 	glPointSize(radius);
-	// glColor3d(1.0, 1.0, 0);
 	setColor(hsl);
 
 	glBegin(GL_POINTS);
 	glVertex2d(point.x, point.y);
 	glEnd();
+	*/
+	drawSolidCircle(point, radius, hsl);
+	// drawHollowCircle(point, radius, hsl);
 }
 
 inline void drawLine(Coord start, Coord end, int linewidth, HSL hsl) {
@@ -59,10 +109,10 @@ inline void drawLine(Coord start, Coord end, int linewidth, HSL hsl) {
 	glEnd();
 }
 
-inline void drawTree(const std::shared_ptr<Node>& root) {
+inline void drawTree(const std::shared_ptr<Node>& root, HSL hsl) {
 	for (auto child : root->children) {
-		drawLine(root->coord, child->coord, 1, HSL(100, 1, 0.5));
-		drawTree(child);
+		drawLine(root->coord, child->coord, 1, hsl);
+		drawTree(child, hsl);
 	}
 }
 
@@ -136,6 +186,10 @@ void drawGraph(Node* root, unordered_map<Node*, std::vector<Node*>> visibilityGr
 */
 
 inline void drawPath(std::deque<Coord>& path, HSL lineHsl, HSL pointHsl) {
+	for (auto point : path) {
+		drawPoint(point, 2, pointHsl);
+	}
+
 	glEnable(GL_LINE_SMOOTH);
 	glLineWidth(3);
 	// glColor3d(0.0, 1.0, 0.2);
@@ -148,10 +202,6 @@ inline void drawPath(std::deque<Coord>& path, HSL lineHsl, HSL pointHsl) {
 	glEnd();
 
 	glDisable(GL_LINE_SMOOTH);
-
-	for (auto point : path) {
-		drawPoint(point, 5, pointHsl);
-	}
 }
 
 inline void drawObstacles(std::vector<std::shared_ptr<Rect>>* obstacleRects, const double OBSTACLE_PADDING, HSL hsl) {

@@ -14,7 +14,7 @@ inline double euclideanDistance(double x1, double y1, double x2, double y2) {
 	return sqrt(dx * dx + dy * dy);
 }
 
-inline double euclideanDistance(Coord &c1, Coord &c2) { return euclideanDistance(c1.x, c1.y, c2.x, c2.y); }
+inline double euclideanDistance(Coord c1, Coord c2) { return euclideanDistance(c1.x, c1.y, c2.x, c2.y); }
 
 inline Coord randomPoint(int dx, int dy) { return Coord(rand() % dx, rand() % dy); }
 
