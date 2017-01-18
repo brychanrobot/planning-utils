@@ -45,7 +45,7 @@ inline void generateObstacleHash(std::vector<std::shared_ptr<Rect>>& obstacleRec
 	}
 }
 
-inline bool lineIntersectsObstacles(Coord& p1, Coord& p2, std::vector<std::vector<bool>>* obstacleHash, int width, int height) {
+inline bool lineIntersectsObstacles(Coord p1, Coord p2, std::vector<std::vector<bool>>* obstacleHash, int width, int height) {
 	auto dx = p2.x - p1.x;
 	auto dy = p2.y - p1.y;
 
