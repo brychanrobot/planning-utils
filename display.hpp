@@ -247,6 +247,12 @@ inline GLFWwindow* initWindow(bool isFullscreen, int monitorNum, int& width, int
 	return window;
 }
 
+inline void close(GLFWwindow* window) {
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	exit(EXIT_SUCCESS);
+}
+
 inline void displayLoop(GLFWwindow* window, double frameRate, std::function<void()> display, std::function<void()> remainder) {
 	auto lastFrame = glfwGetTime();
 	auto frameInterval = 1.0 / frameRate;
@@ -268,7 +274,5 @@ inline void displayLoop(GLFWwindow* window, double frameRate, std::function<void
 		}
 	}
 
-	glfwDestroyWindow(window);
-	glfwTerminate();
-	exit(EXIT_SUCCESS);
+	close(window);
 }
