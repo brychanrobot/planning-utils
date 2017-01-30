@@ -1,0 +1,1 @@
+ported from `https://github.com/Silverwolf90/2d-visibility.git`

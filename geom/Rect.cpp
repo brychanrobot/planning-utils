@@ -39,11 +39,11 @@ bool Rect::contains(Coord point) {
 bool valueInRange(double value, double min, double max) { return (value >= min) && (value <= max); }
 
 bool Rect::intersects(Rect& rect) {
-	bool xOverlap = valueInRange(this->topLeft.x, rect.topLeft.x, rect.bottomRight.x) ||
-	                valueInRange(rect.topLeft.x, this->topLeft.x, this->bottomRight.x);
+	bool xOverlap =
+	    valueInRange(this->topLeft.x, rect.topLeft.x, rect.bottomRight.x) || valueInRange(rect.topLeft.x, this->topLeft.x, this->bottomRight.x);
 
-	bool yOverlap = valueInRange(this->topLeft.y, rect.topLeft.y, rect.bottomRight.y) ||
-	                valueInRange(rect.topLeft.y, this->topLeft.y, this->bottomRight.y);
+	bool yOverlap =
+	    valueInRange(this->topLeft.y, rect.topLeft.y, rect.bottomRight.y) || valueInRange(rect.topLeft.y, this->topLeft.y, this->bottomRight.y);
 
 	return xOverlap && yOverlap;
 }
@@ -56,8 +56,7 @@ void Rect::getPoints(vector<Coord>& points) {
 	double pad = 1;
 
 	points.push_back(Coord(this->topLeft.x - pad, this->topLeft.y - pad));
-	points.push_back(Coord(this->bottomRight.x + pad, this->bottomRight.y + pad));
-
-	points.push_back(Coord(this->topLeft.x - pad, this->bottomRight.y + pad));
 	points.push_back(Coord(this->bottomRight.x + pad, this->topLeft.y - pad));
+	points.push_back(Coord(this->bottomRight.x + pad, this->bottomRight.y + pad));
+	points.push_back(Coord(this->topLeft.x - pad, this->bottomRight.y + pad));
 }
