@@ -1,13 +1,13 @@
+#include <GLFW/glfw3.h>
+#include <cmath>
 #include <functional>
 #include <memory>
 #include <set>
 #include <vector>
-#include <cmath>
-#include <GLFW/glfw3.h>
-#include "libs/color.hpp"
+#include "Node.hpp"
 #include "geom/Coord.hpp"
 #include "geom/Rect.hpp"
-#include "Node.hpp"
+#include "libs/color.hpp"
 
 static void onError(int error, const char* description) { fputs(description, stderr); }
 
@@ -184,6 +184,23 @@ void drawGraph(Node* root, unordered_map<Node*, std::vector<Node*>> visibilityGr
     drawGraphIterative(visited, visibilityGraph);
 }
 */
+
+inline void drawPolygon(Coord origin, std::vector<Coord>& border, HSL hsl) {
+	glEnable(GL_POLYGON_SMOOTH);
+	setColor(hsl, 0.6);
+
+	glBegin(GL_TRIANGLE_FAN);
+
+	glVertex2d(origin.x, origin.y);
+
+	for (auto point : border) {
+		glVertex2d(point.x, point.y);
+	}
+
+	glEnd();
+
+	glDisable(GL_POLYGON_SMOOTH);
+}
 
 inline void drawPath(std::deque<Coord>& path, HSL lineHsl, HSL pointHsl) {
 	for (auto point : path) {
