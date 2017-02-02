@@ -15,5 +15,5 @@ class Rect {
 	void inflate(double dx, double dy);
 	double width();
 	double height();
-	void getPoints(std::vector<Coord>& points);
+	void getPoints(std::vector<Coord>& points, double pad = 1);
 };

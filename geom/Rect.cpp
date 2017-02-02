@@ -52,9 +52,7 @@ double Rect::width() { return this->bottomRight.x - this->topLeft.x; }
 
 double Rect::height() { return this->bottomRight.y - this->topLeft.y; }
 
-void Rect::getPoints(vector<Coord>& points) {
-	double pad = 1;
-
+void Rect::getPoints(vector<Coord>& points, double pad) {
 	points.push_back(Coord(this->topLeft.x - pad, this->topLeft.y - pad));
 	points.push_back(Coord(this->bottomRight.x + pad, this->topLeft.y - pad));
 	points.push_back(Coord(this->bottomRight.x + pad, this->bottomRight.y + pad));

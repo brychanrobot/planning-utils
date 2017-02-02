@@ -10,7 +10,7 @@
 
 inline void segmentsFromRectangle(std::shared_ptr<Rect> r, std::vector<std::shared_ptr<Segment>>& segments) {
 	std::vector<Coord> points;
-	r->getPoints(points);
+	r->getPoints(points, 0);
 
 	segments.push_back(createSegment(points[0], points[1]));
 	segments.push_back(createSegment(points[1], points[2]));
@@ -47,9 +47,9 @@ inline void refreshSegments(Coord origin, std::vector<std::shared_ptr<Segment>>&
 	}
 }
 
-inline void loadMap(Rect room, std::vector<std::shared_ptr<Rect>>* obstacles, std::vector<std::shared_ptr<Segment>>& segments,
+inline void loadMap(std::shared_ptr<Rect> room, std::vector<std::shared_ptr<Rect>>* obstacles, std::vector<std::shared_ptr<Segment>>& segments,
                     std::vector<std::shared_ptr<EndPoint>>& endpoints) {
-	segmentsFromRectangle(std::shared_ptr<Rect>(&room), segments);
+	segmentsFromRectangle(room, segments);
 	for (auto obstacle : *obstacles) {
 		segmentsFromRectangle(obstacle, segments);
 	}

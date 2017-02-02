@@ -8,7 +8,9 @@ bool leftOf(std::shared_ptr<Segment> segment, Coord point) {
 	return cross < 0;
 };
 
-Coord interpolate(std::shared_ptr<EndPoint> pointA, std::shared_ptr<EndPoint> pointB, double f) { return Coord(pointA->x * (1 - f) + pointB->x * f, pointA->y * (1 - f) + pointB->y * f); };
+Coord interpolate(std::shared_ptr<EndPoint> pointA, std::shared_ptr<EndPoint> pointB, double f) {
+	return Coord(pointA->x * (1 - f) + pointB->x * f, pointA->y * (1 - f) + pointB->y * f);
+};
 
 bool segmentInFrontOf(std::shared_ptr<Segment> segmentA, std::shared_ptr<Segment> segmentB, Coord relativePoint) {
 	auto A1 = leftOf(segmentA, interpolate(segmentB->p1, segmentB->p2, 0.01));
@@ -24,12 +26,12 @@ bool segmentInFrontOf(std::shared_ptr<Segment> segmentA, std::shared_ptr<Segment
 	if (A1 == A2 && A2 == A3) {
 		return true;
 	}
-	if (A1 == A2 && A2 != A3) {
-		return false;
+	/*if (A1 == A2 && A2 != A3) {
+	    return false;
 	}
 	if (B1 == B2 && B2 == B3) {
-		return false;
-	}
+	    return false;
+	}*/
 
 	return false;
 }
