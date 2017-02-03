@@ -185,9 +185,25 @@ void drawGraph(Node* root, unordered_map<Node*, std::vector<Node*>> visibilityGr
 }
 */
 
-inline void drawPolygon(Coord origin, std::vector<Coord>& border, HSL hsl) {
+inline void drawLoop(std::vector<Coord>& border, HSL hsl, double alpha) {
+	glEnable(GL_LINE_SMOOTH);
+	glLineWidth(3);
+	// glColor3d(0.0, 1.0, 0.2);
+	setColor(hsl);
+
+	glBegin(GL_LINE_STRIP);
+	for (auto point : border) {
+		glVertex2d(point.x, point.y);
+	}
+	glVertex2d(border[0].x, border[0].y);
+	glEnd();
+
+	glDisable(GL_LINE_SMOOTH);
+}
+
+inline void drawPolygon(Coord origin, std::vector<Coord>& border, HSL hsl, double alpha) {
 	glEnable(GL_POLYGON_SMOOTH);
-	setColor(hsl, 0.6);
+	setColor(hsl, alpha);
 
 	glBegin(GL_TRIANGLE_FAN);
 
@@ -200,6 +216,8 @@ inline void drawPolygon(Coord origin, std::vector<Coord>& border, HSL hsl) {
 	glEnd();
 
 	glDisable(GL_POLYGON_SMOOTH);
+
+	drawLoop(border, hsl, 0.5);
 }
 
 inline void drawPath(std::deque<Coord>& path, HSL lineHsl, HSL pointHsl) {

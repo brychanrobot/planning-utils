@@ -9,22 +9,21 @@
 #include "./loadMap.hpp"
 #include "./segmentInFrontOf.hpp"
 
-bool endpointCompare(const std::shared_ptr<EndPoint>& pointA, const std::shared_ptr<EndPoint>& pointB) {
-	if (pointA->angle > pointB->angle) return true;
-	if (pointA->angle < pointB->angle) return false;
-	if (!pointA->beginsSegment && pointB->beginsSegment) return true;
-	if (pointA->beginsSegment && !pointB->beginsSegment) return false;
+inline bool endpointCompare(const std::shared_ptr<EndPoint>& pointA, const std::shared_ptr<EndPoint>& pointB) {
+	if (pointA->angle > pointB->angle) return false;
+	if (pointA->angle < pointB->angle) return true;
+	if (!pointA->beginsSegment && pointB->beginsSegment) return false;
+	if (pointA->beginsSegment && !pointB->beginsSegment) return true;
 	return false;
 }
 
-Coord lineIntersection(Coord point1, Coord point2, Coord point3, Coord point4) {
-	auto s = ((point4.x - point3.x) * (point1.y - point3.y) - (point4.y - point3.y) * (point1.x - point3.x)) /
-	         ((point4.y - point3.y) * (point2.x - point1.x) - (point4.x - point3.x) * (point2.y - point1.y));
+inline Coord lineIntersection(Coord p1, Coord p2, Coord p3, Coord p4) {
+	auto s = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / ((p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y));
 
-	return Coord(point1.x + s * (point2.x - point1.x), point1.y + s * (point2.y - point1.y));
+	return Coord(p1.x + s * (p2.x - p1.x), p1.y + s * (p2.y - p1.y));
 }
 
-std::vector<Coord> getTrianglePoints(Coord origin, double angle1, double angle2, std::shared_ptr<Segment> segment) {
+inline std::vector<Coord> getTrianglePoints(Coord origin, double angle1, double angle2, std::shared_ptr<Segment> segment) {
 	auto p1 = origin;
 	auto p2 = Coord(origin.x + cos(angle1), origin.y + sin(angle1));
 	auto p3 = Coord(0, 0);
@@ -52,20 +51,20 @@ std::vector<Coord> getTrianglePoints(Coord origin, double angle1, double angle2,
 	return std::vector<Coord>{pBegin, pEnd};
 }
 
-std::vector<Coord> calculateVisibility(Coord origin, std::vector<std::shared_ptr<Segment>>& segments,
-                                       std::vector<std::shared_ptr<EndPoint>>& endpoints) {
+inline std::vector<Coord> calculateVisibility(Coord origin, std::vector<std::shared_ptr<Segment>>& segments,
+                                              std::vector<std::shared_ptr<EndPoint>>& endpoints) {
 	refreshSegments(origin, segments);
 
 	std::list<std::shared_ptr<Segment>> openSegments;
 	std::vector<Coord> polygon;
-	double beginAngle = 0.0;
+	double currentAngle = 0.0;
 
 	std::sort(endpoints.begin(), endpoints.end(), endpointCompare);
 
 	for (auto pass = 0; pass < 2; pass++) {
 		for (auto endpoint : endpoints) {
 			// auto endpoint = endpoints[i];
-			auto openSegment = openSegments.empty() ? nullptr : openSegments.front();
+			auto currentOld = openSegments.empty() ? nullptr : openSegments.front();
 
 			if (endpoint->beginsSegment) {
 				auto segmentIter = openSegments.begin();
@@ -82,15 +81,38 @@ std::vector<Coord> calculateVisibility(Coord origin, std::vector<std::shared_ptr
 				openSegments.remove(endpoint->segment);
 			}
 
-			if (openSegment != openSegments.front()) {
+			auto newOpen = openSegments.empty() ? nullptr : openSegments.front();
+			if (currentOld != newOpen) {
 				if (pass == 1) {
-					auto trianglePoints = getTrianglePoints(origin, beginAngle, endpoint->angle, openSegment);
-					polygon.insert(polygon.begin(), trianglePoints.begin(), trianglePoints.end());
+					auto trianglePoints = getTrianglePoints(origin, currentAngle, endpoint->angle, currentOld);
+					polygon.insert(polygon.end(), trianglePoints.begin(), trianglePoints.end());
 				}
-				beginAngle = endpoint->angle;
+				currentAngle = endpoint->angle;
 			}
 		}
 	}
 
 	return polygon;
+}
+
+// Area2DPolygon compute the area of a 2D polygon
+// http://geomalgorithms.com/a01-_area.html#2D%20Polygons
+//  Input:  std::vector<Coord>& points = an array of n vertex points
+//  Return: the (double) area of the polygon
+inline double getPolygonArea(std::vector<Coord>& points) {
+	auto n = points.size();
+
+	if (n < 3) {
+		return 0;
+	}  // a degenerate polygon
+
+	points.push_back(points[0]);
+
+	auto area = 0.0;
+
+	for (unsigned long i = 0; i < n; i++) {
+		area += points[i].x * (points[i + 1].y - points[i - 1].y);
+	}
+	area += points[n].x * (points[1].y - points[n - 1].y);  // wrap-around term
+	return area / 2.0;
 }

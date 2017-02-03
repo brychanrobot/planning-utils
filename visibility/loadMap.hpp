@@ -10,7 +10,7 @@
 
 inline void segmentsFromRectangle(std::shared_ptr<Rect> r, std::vector<std::shared_ptr<Segment>>& segments) {
 	std::vector<Coord> points;
-	r->getPoints(points, 0);
+	r->getPoints(points, -3);
 
 	segments.push_back(createSegment(points[0], points[1]));
 	segments.push_back(createSegment(points[1], points[2]));
@@ -32,7 +32,7 @@ inline void setSegmentBeginning(std::shared_ptr<Segment> segment) {
 
 	if (dAngle <= -M_PI) {
 		dAngle += 2 * M_PI;
-	} else {
+	} else if (dAngle >= M_PI) {
 		dAngle -= 2 * M_PI;
 	}
 
@@ -59,9 +59,5 @@ inline void loadMap(std::shared_ptr<Rect> room, std::vector<std::shared_ptr<Rect
 	for (auto segment : segments) {
 		endpoints.push_back(segment->p1);
 		endpoints.push_back(segment->p2);
-	}
-
-	for (auto endpoint : endpoints) {
-		printf("%.2f, %.2f\n", endpoint->y, endpoint->y);
 	}
 }

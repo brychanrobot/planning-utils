@@ -6,11 +6,11 @@
 bool leftOf(std::shared_ptr<Segment> segment, Coord point) {
 	auto cross = (segment->p2->x - segment->p1->x) * (point.y - segment->p1->y) - (segment->p2->y - segment->p1->y) * (point.x - segment->p1->x);
 	return cross < 0;
-};
+}
 
 Coord interpolate(std::shared_ptr<EndPoint> pointA, std::shared_ptr<EndPoint> pointB, double f) {
 	return Coord(pointA->x * (1 - f) + pointB->x * f, pointA->y * (1 - f) + pointB->y * f);
-};
+}
 
 bool segmentInFrontOf(std::shared_ptr<Segment> segmentA, std::shared_ptr<Segment> segmentB, Coord relativePoint) {
 	auto A1 = leftOf(segmentA, interpolate(segmentB->p1, segmentB->p2, 0.01));
