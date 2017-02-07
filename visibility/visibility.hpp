@@ -85,7 +85,13 @@ inline std::vector<Coord> calculateVisibility(Coord origin, std::vector<std::sha
 			if (currentOld != newOpen) {
 				if (pass == 1) {
 					auto trianglePoints = getTrianglePoints(origin, currentAngle, endpoint->angle, currentOld);
-					polygon.insert(polygon.end(), trianglePoints.begin(), trianglePoints.end());
+					// polygon.insert(polygon.end(), trianglePoints.begin(), trianglePoints.end());
+					if (polygon.size() == 0 || trianglePoints.front() != polygon.back()) {
+						polygon.push_back(trianglePoints.front());
+					}
+					if (trianglePoints.back() != polygon.back()) {
+						polygon.push_back(trianglePoints.back());
+					}
 				}
 				currentAngle = endpoint->angle;
 			}
