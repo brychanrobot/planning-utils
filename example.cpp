@@ -2,19 +2,19 @@
 #include <cstdio>
 #include <cstdlib>
 #include <deque>
-#include "libs/cxxopts.hpp"
+#include "display.hpp"
 #include "geom/Coord.hpp"
 #include "geom/Rect.hpp"
 #include "geom/utils.hpp"
+#include "libs/cxxopts.hpp"
 #include "utils.hpp"
-#include "display.hpp"
 
 using namespace std;
 
 const double OBSTACLE_PADDING = 5;
 
-void display(deque<Coord>& path, vector<shared_ptr<Rect>>& obstacleRects) {
-	drawObstacles(&obstacleRects, OBSTACLE_PADDING, HSL(275, 1.0, 0.5));
+void display(deque<Coord>& path, std::shared_ptr<vector<shared_ptr<Rect>>> obstacleRects) {
+	drawObstacles(obstacleRects, OBSTACLE_PADDING, HSL(275, 1.0, 0.5));
 
 	drawPath(path, HSL(100, 1.0, 0.3), HSL(150, 1.0, 0.5));
 
@@ -24,9 +24,9 @@ void display(deque<Coord>& path, vector<shared_ptr<Rect>>& obstacleRects) {
 	}
 }
 
-Coord randomOpenAreaPoint(int width, int height, vector<vector<bool>>& obstacleHash) {
+Coord randomOpenAreaPoint(int width, int height, std::shared_ptr<vector<vector<bool>>> obstacleHash) {
 	auto point = randomPoint(width, height);
-	while (obstacleHash[(int)point.y][(int)point.x]) {
+	while ((*obstacleHash)[(int)point.y][(int)point.x]) {
 		point = randomPoint(width, height);
 	}
 
@@ -52,28 +52,25 @@ int main(int argc, char* argv[]) {
 
 	auto window = initWindow(isFullscreen, monitorNum, width, height);
 
-	vector<shared_ptr<Rect>> obstacleRects;
-	generateObstacleRects(width, height, 10, obstacleRects, OBSTACLE_PADDING);
-
-	vector<vector<bool>> obstacleHash(height, vector<bool>(width, false));
-	generateObstacleHash(obstacleRects, obstacleHash);
+	auto obstacleRects = generateObstacleRects(width, height, 10, OBSTACLE_PADDING);
+	auto obstacleHash = generateObstacleHash(width, height, obstacleRects);
 
 	deque<Coord> path;
 
-	auto displayCallback = [&path, &obstacleRects]() { display(path, obstacleRects); };
+	auto displayCallback = [&path, obstacleRects]() { display(path, obstacleRects); };
 
 	auto lastPointAdd = glfwGetTime();
 	auto pointAddFrequency = 5.0;
 	auto pointAddInterval = 1.0 / pointAddFrequency;
 
-	auto remainderCallback = [&path, &lastPointAdd, &pointAddInterval, &width, &height, &obstacleHash]() {
+	auto remainderCallback = [&path, &lastPointAdd, &pointAddInterval, &width, &height, obstacleHash]() {
 		auto currentTime = glfwGetTime();
 		if (currentTime - lastPointAdd >= pointAddInterval) {
 			lastPointAdd = currentTime;
 
 			auto newPoint = randomOpenAreaPoint(width, height, obstacleHash);
 			if (path.size() != 0) {
-				while (lineIntersectsObstacles(newPoint, path.back(), &obstacleHash, width, height)) {
+				while (lineIntersectsObstacles(newPoint, path.back(), obstacleHash, width, height)) {
 					newPoint = randomOpenAreaPoint(width, height, obstacleHash);
 				}
 			}

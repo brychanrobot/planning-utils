@@ -47,7 +47,7 @@ inline void refreshSegments(Coord origin, std::vector<std::shared_ptr<Segment>>&
 	}
 }
 
-inline void loadMap(std::shared_ptr<Rect> room, std::vector<std::shared_ptr<Rect>>* obstacles, std::vector<std::shared_ptr<Segment>>& segments,
+inline void loadMap(std::shared_ptr<Rect> room, std::shared_ptr<std::vector<std::shared_ptr<Rect>>> obstacles, std::vector<std::shared_ptr<Segment>>& segments,
                     std::vector<std::shared_ptr<EndPoint>>& endpoints) {
 	segmentsFromRectangle(room, segments);
 	for (auto obstacle : *obstacles) {

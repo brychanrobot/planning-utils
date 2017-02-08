@@ -239,7 +239,7 @@ inline void drawPath(std::deque<Coord>& path, HSL lineHsl, HSL pointHsl) {
 	glDisable(GL_LINE_SMOOTH);
 }
 
-inline void drawObstacles(std::vector<std::shared_ptr<Rect>>* obstacleRects, const double OBSTACLE_PADDING, HSL hsl) {
+inline void drawObstacles(std::shared_ptr<std::vector<std::shared_ptr<Rect>>> obstacleRects, const double OBSTACLE_PADDING, HSL hsl) {
 	// glColor3d(0.0, 1.0, 0.5);
 	setColor(hsl);
 	glBegin(GL_QUADS);
