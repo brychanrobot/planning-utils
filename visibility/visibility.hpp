@@ -117,8 +117,9 @@ inline double getPolygonArea(std::vector<Coord>& points) {
 	auto area = 0.0;
 
 	for (unsigned long i = 0; i < n; i++) {
-		area += points[i].x * (points[i + 1].y - points[i - 1].y);
+		// area += points[i].x * (points[i + 1].y - points[i - 1].y);
+		area += points[i].x * points[i + 1].y - points[i + 1].x * points[i].y;
 	}
-	area += points[n].x * (points[1].y - points[n - 1].y);  // wrap-around term
+	// area += points[n].x * (points[1].y - points[n - 1].y);  // wrap-around term
 	return area / 2.0;
 }

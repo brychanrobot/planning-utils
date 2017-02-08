@@ -8,6 +8,7 @@ struct Coord {
   Coord(int x, int y) : x(x), y(y) {}
 };
 */
+#include <cmath>
 #include <functional>
 #include <vector>
 
@@ -40,8 +41,8 @@ class Coord {
 	// bool operator==(const Coord& other) { return this->x == other.x && this->y == other.y; }
 };
 
-inline bool operator==(const Coord& lhs, const Coord& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
-inline bool operator!=(const Coord& lhs, const Coord& rhs) { return lhs.x != rhs.x || lhs.y != rhs.y; }
+inline bool operator==(const Coord& lhs, const Coord& rhs) { return abs(lhs.x - rhs.x) + abs(lhs.y - rhs.y) < 0.001; }
+inline bool operator!=(const Coord& lhs, const Coord& rhs) { return abs(lhs.x - rhs.x) + abs(lhs.y - rhs.y) > 0.001; }
 
 namespace std {
 
