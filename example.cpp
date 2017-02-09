@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 					newPoint = randomOpenAreaPoint(width, height, obstacleHash);
 				}
 			}
-			path.push_back(randomOpenAreaPoint(width, height, obstacleHash));
+			path.push_back(newPoint);
 		}
 	};
 
